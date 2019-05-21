@@ -67,7 +67,7 @@ def findMicroTrends(analyzed_time, end, trend_length, variability, data):
             originprev = u.getCloseData(data, analyzed_time - timedelta(minutes = count - 1))
             
             count = count + 1
-            if(withinRange(testprev/test, originprev/origin, variability)):
+            if(u.withinRange(testprev/test, originprev/origin, variability)):
                 if(count == trend_length):
                     try:
                         microTrend(time_iterat, time_iterat - timedelta(minutes = trend_length), data)
