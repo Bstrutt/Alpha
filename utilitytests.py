@@ -23,17 +23,20 @@ class TestDataRetrieval(unittest.TestCase):
                      '5. volume':[762853.0, 765975.0, 971940.0, 633485.0, 488864.0]
         }
         self.T = DataFrame(self.Data, self.idx)
+        self.startTime = pd.to_datetime('2018-01-01 00:00:00')
+        
     def test_ToStringEqual(self):  
         self.assertEqual(u.timeToString(self.D), '2018-01-01 00:00:00')
-        
     def test_ToStringNotEqual(self):
         self.assertNotEqual(u.timeToString(self.D), '2018-02-01 00:00:00')            
     
     def test_WithinRange(self):
         self.assertTrue(u.withinRange(1.5, 1, .5))
-        
     def test_OutsideRange(self):
         self.assertFalse(u.withinRange(1.6, 1, .5))
+        
+    def test_getClose(self):
+        self.assertEqual(u.getCloseData(self.T, self.startTime), 26.4951)
         
 if __name__ == '__main__':
     unittest.main(verbosity = 2)
