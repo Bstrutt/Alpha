@@ -3,6 +3,9 @@ import pandas as pd
 """
 Created on Mon May 20 14:59:01 2019
 @author: Bryce
+All times are taken as datetime objects from the pandas api
+If you try to use other time objects it's gonna fuck up
+So don't
 """
 
 """
@@ -33,6 +36,13 @@ Returns low data on the time parameter
 """
 def getLowData(data, time):
     return data.loc[timeToString(time), '3. low']
+
+
+"""
+Returns a new dataframe within the start and end times from data
+"""
+def createRange(data, start, end):
+    return data[timeToString(end):timeToString(start)]
 
 """
 Returns boolean if testVal is within mean plus or minus rangeValue

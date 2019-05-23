@@ -23,15 +23,10 @@ class microTrend:
         self.end = end
         self.initial_price = u.getCloseData(data, start)
         self.close_price = u.getCloseData(data, end)
-        self.rangeDataFrame = createRange(start, end)
+        self.rangeDataFrame = u.createRange(data, start, end)
         
 
 
-"""
-Returns a new dataframe within the start and end times from data
-"""
-def createRange(start, end):
-    return data[u.timeToString(end):u.timeToString(start)]
 
 #%%    
 """
