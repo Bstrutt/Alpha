@@ -37,6 +37,8 @@ Returns low data on the time parameter
 def getLowData(data, time):
     return data.loc[timeToString(time), '3. low']
 
+def getVolumeData(data, time):
+    return data.loc[timeToString(time), '5. volume']
 
 """
 Returns a new dataframe within the start and end times from data

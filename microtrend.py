@@ -1,15 +1,21 @@
 
 __author__ = 'Bryce Struttman' 
 
-demo = '59C9BBMYJLO1R7FJ'
+f = open("key.txt", "r")
+key = f.read()
 from alpha_vantage.timeseries import TimeSeries
+
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+from mpl_finance import candlestick_ohlc
+
 import numpy as np
 import pandas as pd
-from pprint import pprint
-import matplotlib.pyplot as plt
 from datetime import datetime 
 from datetime import timedelta
+
 import utilityfunctions as u
+
 
 class microTrend:
     start = 0
@@ -24,6 +30,26 @@ class microTrend:
         self.initial_price = u.getCloseData(data, start)
         self.close_price = u.getCloseData(data, end)
         self.rangeDataFrame = u.createRange(data, start, end)
+        
+#%%    
+def toCandlestick(trend):
+    ohlc = list()
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((1,1), (0,0))
+    iterator = trend.end
+    while iterator < trend.start :
+        append_me = iterator, u.getOpenData(trend.rangeDataFrame, iterator), u.getHighData(trend.rangeDataFrame, iterator), u.getLowData(trend.rangeDataFrame, iterator), u.getCloseData(trend.rangeDataFrame, iterator), u.getVolumeData(trend.rangeDataFrame, iterator) 
+        ohlc.append(append_me)
+        iterator = iterator + timedelta(minutes = 1)
+    
+    candlestick_ohlc(ax1, ohlc, width=0.4, colorup='#77d879', colordown='#db3f3f')
+
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.title('AMD')
+    plt.legend()
+    plt.subplots_adjust(left=0.09, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
+    plt.show()
         
 
 
@@ -81,7 +107,7 @@ def findMicroTrends(analyzed_time, end, trend_length, variability, data):
  #%%
  # retrieve data as pandas dataframe
  
-ts_date = TimeSeries(key=demo, output_format='pandas')
+ts_date = TimeSeries(key=key, output_format='pandas')
 data, meta_data = ts_date.get_intraday(symbol='AMD',interval='1min', outputsize='full')
 
 """
