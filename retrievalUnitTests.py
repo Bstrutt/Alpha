@@ -11,5 +11,7 @@ import pandas as pd
 import retrievalUtilities as r
 from datetime import datetime 
 
-x = r.readStoredSymbol('AAPL','1min')
+x = r.readSymbol('AAPL','1min')
 z = r.latestDatetime(x)
+r.updateSymbol('AAPL', '1min')
+x = r.readSymbol('AAPL','1min')
