@@ -5,9 +5,9 @@ Created on Wed May 22 14:39:34 2019
 @author: Bryce
 """
 
-import numpy
+#import utilityfunctions as u
+#import numpy
 import talib
-import utilityfunctions as u
 
 """
 Calculates a simple moving average, generalized to any time period
