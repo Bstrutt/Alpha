@@ -12,15 +12,26 @@ from datetime import datetime
 import utilityfunctions as u
 
 """
-Reads in stored data for use in feature production
+Reads in stored data for use in updating symbol storage
 """
-def readSymbol(symbol, interval):
+def readSymbolHelper(symbol, interval):
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, 'SymbolPickles', symbol, interval)
     return pd.read_pickle(filename)
 
 """
+Standalone symbol reader for use by user
+"""
+def readSymbol(symbol, interval):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'SymbolPickles', symbol, interval)
+    try:
+        return pd.read_pickle(filename)
+    except FileNotFoundError:
+        print('That symbol/interval is not stored')
+"""
 Writes the data given in a file named by symbol/interval combinations
+Checks for existing file and writes a new file if there is none existing
 """
 def writeSymbol(symbol, interval, data):
     dirname = os.path.dirname(__file__)
@@ -46,24 +57,31 @@ def updateSymbol(symbol, interval):
     f = open("key.txt", "r")
     key = f.read()  
     f.close()
+    ts_date = TimeSeries(key=key, output_format='pandas')
     
     #Read stored data 
-    data = readSymbol(symbol, interval)
-    
-    #find the latest time that is stored
-    latest = latestDatetime(data)
-    
-    #increment latest time to add subsequent data points
-    latest = datetime.strptime(latest, "%Y-%m-%d %H:%M:%S")
-    latest = latest + timedelta(minutes = 1)
-    latest = u.timeToString(latest)
-    
-    #Retrieve new data to update stored data
-    ts_date = TimeSeries(key=key, output_format='pandas')
-    d, m = ts_date.get_intraday(symbol= symbol,interval=interval, outputsize='full')
-    
-    #append stored data from latest onwards
-    updatedData = data.append(d[latest:])
-    writeSymbol(symbol, interval, updatedData)
-    
+    try:
+        #This can throw an error
+        data = readSymbolHelper(symbol, interval)
+
+        #Find the latest time stored and increment it by 1 to make appending
+        #easier. There's probably a better way to do this.
+        latest = latestDatetime(data)
+        latest = datetime.strptime(latest, "%Y-%m-%d %H:%M:%S")
+        latest = latest + timedelta(minutes = 1)
+        latest = u.timeToString(latest)
+        
+        #Retrieve new data to update stored data
+        d, m = ts_date.get_intraday(symbol= symbol,interval=interval, outputsize='full')
+        
+        #append stored data from latest onwards
+        updatedData = data.append(d[latest:])
+        #Write the symbol
+        writeSymbol(symbol, interval, updatedData)
+        
+    except FileNotFoundError:
+        #If there is no file previously, do this
+        d, m = ts_date.get_intraday(symbol= symbol, interval=interval, outputsize='full')
+        writeSymbol(symbol, interval, d)
+        
     
